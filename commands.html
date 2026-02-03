@@ -4,14 +4,29 @@
   <meta charset="utf-8"/>
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <script>
-    Office.onReady(() => {});
+    Office.onReady(() => {
+      // ВАЖНО для ExecuteFunction:
+      Office.actions.associate("test1", test1);
+      Office.actions.associate("test2", test2);
+    });
 
-    function test1() {
-      alert("test1");
+    function test1(event) {
+      // alert иногда блокируется в New Outlook, поэтому лучше notificationMessages:
+      Office.context.mailbox.item.notificationMessages.replaceAsync("t1", {
+        type: "informationalMessage",
+        message: "test1",
+        persistent: false
+      });
+      event.completed();
     }
 
-    function test2() {
-      alert("test2");
+    function test2(event) {
+      Office.context.mailbox.item.notificationMessages.replaceAsync("t2", {
+        type: "informationalMessage",
+        message: "test2",
+        persistent: false
+      });
+      event.completed();
     }
   </script>
 </head>
