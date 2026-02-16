@@ -12,7 +12,7 @@
 
     function test1(event) {
 
-    fetch("https://localhost:7212/api/test")
+      fetch("https://localhost:7212/api/test")
         .then(response => response.text())
         .then(data => {
             Office.context.mailbox.item.notificationMessages.replaceAsync("t1", {
