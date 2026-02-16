@@ -11,14 +11,27 @@
     });
 
     function test1(event) {
-      // alert иногда блокируется в New Outlook, поэтому лучше notificationMessages:
-      Office.context.mailbox.item.notificationMessages.replaceAsync("t1", {
-        type: "informationalMessage",
-        message: "test1",
-        persistent: false
-      });
-      event.completed();
-    }
+
+    fetch("https://localhost:7212/api/test")
+        .then(response => response.text())
+        .then(data => {
+            Office.context.mailbox.item.notificationMessages.replaceAsync("t1", {
+                type: "informationalMessage",
+                message: data,
+                persistent: false
+            });
+        })
+        .catch(error => {
+            Office.context.mailbox.item.notificationMessages.replaceAsync("t1", {
+                type: "informationalMessage",
+                message: "Error calling backend",
+                persistent: false
+            });
+            console.error(error);
+        });
+
+    event.completed();
+}
 
     function test2(event) {
       Office.context.mailbox.item.notificationMessages.replaceAsync("t2", {
