@@ -41,6 +41,54 @@
       });
       event.completed();
     }
+
+    async function sendToErp(event) {
+
+  const settings = Office.context.roamingSettings;
+
+  const serverUrl = settings.get("serverUrl");
+  const username = settings.get("username");
+  const password = settings.get("password");
+
+  if (!serverUrl) {
+    showMessage("Server URL not configured.");
+    event.completed();
+    return;
+  }
+
+  try {
+    await fetch(serverUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user: username,
+        password: password,
+        itemId: Office.context.mailbox.item.itemId
+      })
+    });
+
+    showMessage("Request sent to server.");
+  }
+  catch (e) {
+    showMessage("Error sending request.");
+  }
+
+  event.completed();
+}
+    
+function showMessage(text) {
+  Office.context.mailbox.item.notificationMessages.replaceAsync(
+    "status",
+    {
+      type: "informationalMessage",
+      message: text,
+      persistent: false
+    }
+  );
+}
+
   </script>
 </head>
 <body></body>
