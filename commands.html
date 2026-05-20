@@ -5,11 +5,56 @@
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <script>
     Office.onReady(() => {
-      // ВАЖНО для ExecuteFunction:
-      Office.actions.associate("test1", test1);
-      Office.actions.associate("test2", test2);
+      Office.actions.associate("sendToErp", sendToErp);
+      Office.actions.associate("archiveDocument", archiveDocument);
     });
 
+  async function archiveDocument(event) {
+
+    showMessage("Archive started");
+    event.completed();
+  }
+
+    
+  async function sendToErp(event) {
+
+    const settings = Office.context.roamingSettings;
+  
+    const serverUrl = settings.get("serverUrl");
+    const username = settings.get("username");
+    const password = settings.get("password");
+  
+    if (!serverUrl) {
+      showMessage("Server URL not configured.");
+      event.completed();
+      return;
+    }
+  
+    try {
+  
+      await fetch(serverUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user: username,
+          password: password,
+          itemId: Office.context.mailbox.item.itemId
+        })
+      });
+  
+      showMessage("Request sent to server.");
+    }
+    catch (e) {
+      showMessage("Error sending request.");
+    }
+  
+    event.completed();
+  }
+
+
+    
     function test1(event) {
 
       fetch("https://localhost:7212/api/test")
@@ -91,5 +136,7 @@ function showMessage(text) {
 
   </script>
 </head>
-<body></body>
+<body>
+  Commands loaded
+</body>
 </html>
